@@ -1,3 +1,14 @@
+---
+title: "R语言实现GM(1,1)灰色预测模型"
+author: "shujuecn"
+date: "2022-10-13"
+output: html_document
+---
+
+
+## Build Function
+
+```{r}
 # 配置中文字体
 showtext::showtext_auto(enable = TRUE)
 
@@ -28,7 +39,7 @@ GM11 <- function(x0, t) {
   BT <- t(B)
   # 求BT*B得逆
   M <- solve(BT %*% B)
-  YN <- numeric(length(x0) - 1)
+  # YN <- numeric(length(x0) - 1)
   YN <- x0[2:length(x0)]
   # 模型的最小二乘估计参数列满足alpha尖
   alpha <- M %*% BT %*% YN
@@ -48,7 +59,7 @@ GM11 <- function(x0, t) {
   )
 
   # t为原始数据加预测数据的长度
-  y <- numeric(length(c(1:t)))
+  y <- numeric(length(1:t))
   # 第一个数不变
   y[1] <- x1[1]
   # 将a,u的估计值代入时间响应序列函数计算x1拟合序列y
@@ -66,14 +77,14 @@ GM11 <- function(x0, t) {
 
   # 计算残差e
   e <- numeric(length(x0))
-  for (l in 1:length(x0)) {
+  for (l in seq_along(x0)) {
     # 得残差序列（未取绝对值）
     e[l] <- x0[l] - xy[l]
   }
   cat("绝对残差: ", "\n", e, "\n")
   # 计算相对误差
   e2 <- numeric(length(x0))
-  for (s in 1:length(x0)) {
+  for (s in seq_along(x0)) {
     # 得相对误差
     e2[s] <- (abs(e[s]) / x0[s])
   }
@@ -197,12 +208,18 @@ GM11 <- function(x0, t) {
     col   = c("blue", "red")
   )
 }
+```
 
+## Run
+
+```{r}
 # 原始数据
-initial <- c(196, 191, 215, 200, 237, 205, 254, 243, 264)
+# 文静,殷成宇,廖国伟,王苑,张洁.应用GM(1,1)灰色模型预测全国甲状腺癌发病趋势[J].现代肿瘤医学,2022,30(05):899-902.
+initial <- c(1.98, 2.20, 2.42, 2.98, 3.11, 2.86, 3.82, 4.08, 4.87, 6.05, 6.25)
 
 # 预测原始数据以外的num个值
 num <- 5
 
 # 运行预测模型
 GM11(x0 = initial, t = length(initial) + num)
+```
